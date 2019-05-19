@@ -4,7 +4,7 @@ import numpy as np
 
 lines = []
 
-with open('../../../opt/TrainingData/driving_log.csv') as csvfile:
+with open('TrainingData/driving_log.csv') as csvfile:
     reader = csv.reader(csvfile)
     for line in reader:
         lines.append(line)
@@ -23,9 +23,9 @@ for line in lines:
     filename_center = source_path.split('/')[-1]
     filename_left = source_path_left.split('/')[-1]
     filename_right = source_path_right.split('/')[-1]
-    center_path = '../../../opt/TrainingData/IMG/' + filename_center
-    left_path = '../../../opt/TrainingData/IMG/' + filename_left
-    right_path = '../../../opt/TrainingData/IMG/' + filename_right
+    center_path = 'TrainingData/IMG/' + filename_center
+    left_path = 'TrainingData/IMG/' + filename_left
+    right_path = 'TrainingData/IMG/' + filename_right
     image_center = cv2.imread(center_path)
     image_left = cv2.imread(left_path)
     image_right = cv2.imread(right_path)
@@ -49,7 +49,7 @@ X_train = np.array(images)
 y_train = np.array(measurements)
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Lambda
+from keras.layers import Flatten, Dense, Lambda, Dropout
 from keras.layers import Convolution2D, Cropping2D
 from keras.layers.pooling import MaxPooling2D
 
@@ -63,10 +63,11 @@ model.add(Convolution2D(64,5,5, activation="relu"))
 model.add(Convolution2D(64,5,5, activation="relu"))
 model.add(Flatten())
 model.add(Dense(100))
+model.add(Dropout(0.5))
 model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=2)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=3)
 model.save('model.h5')
